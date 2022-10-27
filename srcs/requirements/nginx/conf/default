@@ -1,0 +1,69 @@
+server {
+		listen 443 ssl http2;
+		listen [::]:443 ssl http2;
+
+		ssl_certificate /etc/ssl/fortytwo.crt;
+		ssl_certificate_key /etc/ssl/fortytwo.key;
+
+		ssl_protocols TLSv1.2 TLSv1.3;
+
+		server_name localhost;
+
+		root /var/www/wordpress/;
+
+		index index.php index.html index.htm;
+
+		location / {
+			try_files $uri $uri/ =404;
+		}
+
+		location ~ \.php$ {
+			include snippets/fastcgi-php.conf;
+			fastcgi_pass wordpress:9000;
+		}
+}
+
+server {
+		listen 81 ssl http2;
+		listen [::]:81 ssl http2;
+
+		ssl_certificate /etc/ssl/fortytwo.crt;
+		ssl_certificate_key /etc/ssl/fortytwo.key;
+
+		ssl_protocols TLSv1.2 TLSv1.3;
+
+		server_name adminer;
+
+		root /var/www/adminer/;
+
+		index index.php index.html index.htm;
+
+		location / {
+			try_files $uri $uri/ =404;
+		}
+
+		location ~ \.php$ {
+			include snippets/fastcgi-php.conf;
+			fastcgi_pass adminer:5000;
+		}
+}
+
+server {
+    listen 82 ssl http2;
+    listen [::]:82 ssl http2;
+
+		ssl_certificate /etc/ssl/fortytwo.crt;
+		ssl_certificate_key /etc/ssl/fortytwo.key;
+
+		ssl_protocols TLSv1.2 TLSv1.3;
+
+		server_name website;
+
+		root /var/www/website/;
+
+		index index.html index.htm;
+
+		location / {
+			try_files $uri $uri/ =404;
+		}
+}

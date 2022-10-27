@@ -1,0 +1,112 @@
+version: "3"
+
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: on-failure
+    ports:
+      - 443:443
+      - 81:81
+      - 82:82
+    networks:
+      - inception
+    volumes:
+      - wp:/var/www/
+    depends_on:
+      - wordpress
+      - adminer
+      - website
+    env_file:
+      - .env
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: on-failure
+    depends_on:
+      - mariadb
+      - redis
+    volumes:
+      - wp:/var/www/
+    networks:
+      - inception
+    env_file:
+      - .env
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: on-failure
+    volumes:
+      - db:/var/lib/mysql/
+    networks:
+      - inception
+    env_file:
+      - .env
+
+  adminer:
+    build: ./requirements/adminer
+    container_name: adminer
+    restart: on-failure
+    networks:
+      - inception
+    volumes:
+      - wp:/var/www/
+
+  website:
+    build: ./requirements/website
+    container_name: website
+    restart: on-failure
+    volumes:
+      - wp:/var/www/
+    networks:
+      - inception
+
+  redis:
+    build: ./requirements/redis
+    container_name: redis
+    restart: on-failure
+    networks:
+      - inception
+
+  ftp:
+    build: ./requirements/ftp
+    container_name: ftp
+    restart: on-failure
+    networks:
+      - inception
+    env_file:
+      - .env
+    volumes:
+      - wp:/var/www/
+
+  rabbitmq:
+    build: ./requirements/rabbitmq
+    container_name: rabbitmq
+    restart: on-failure
+    networks:
+      - inception
+    ports:
+      - 15672:15672
+    env_file:
+      - .env
+
+volumes:
+  wp:
+    driver: local
+    name: wp
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mel-kada/data/wordpress
+  db:
+    driver: local
+    name: db
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/mel-kada/data/mariadb
+
+networks:
+  inception:
